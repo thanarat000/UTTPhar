@@ -2,7 +2,8 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect x=%229%22 y=%222%22 width=%2214%22 height=%2228%22 rx=%227%22 fill=%22%23ff8fb1%22/%3E%3Cpath d=%22M9 16h14v7a7 7 0 0 1-14 0z%22 fill=%22%23fff%22/%3E%3C/svg%3E">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body{margin:0}[hidden]{display:none!important}</style>
 <title>บัญชียา รพ.อุตรดิตถ์</title>
@@ -12,25 +13,25 @@
 <style>
 /* Layout: soft pharmacy-shelf app. Pastel header with capsule mascot, sticky search + tabs, list of drug "pill cards" grouped by letter / group / entitlement. */
 :root{
-  --bg:#f3f8fb; --surface:#ffffff; --surface2:#eef4f8; --fg:#2b3445; --muted:#6b7689; --line:#dde6ee;
-  --accent:#ff6f9c; --accent2:#7c6cf2; --mint:#3cc6a4; --sun:#ffc861;
-  --head1:#ffe3ec; --head2:#e4e4ff; --head3:#dff6ef;
-  --shadow:0 2px 0 rgba(43,52,69,.06), 0 6px 18px rgba(43,52,69,.06);
+  --bg:#f5fafc; --surface:#ffffff; --surface2:#ebf4f8; --fg:#16324a; --muted:#5d7385; --line:#d6e5ee;
+  --accent:#1974ad; --accent2:#1f9446; --mint:#8dc142; --sun:#ffd86b;
+  --head1:#ffffff; --head2:#e2f1fa; --head3:#e5f4e3;
+  --shadow:0 2px 0 rgba(22,50,74,.05), 0 6px 18px rgba(22,50,74,.07);
   --f-display:"Mitr","IBM Plex Sans Thai",system-ui,sans-serif;
   --f-body:"IBM Plex Sans Thai","Mitr",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:18px;
   --hx-purple:#86199a; --hx-blue:#1533d1; --hx-green:#11802b; --hx-teal:#0c7b82; --hx-orange:#d9600b; --hx-red:#d21b1b; --hx-pink:#c919ad; --hx-none:#9aa6b8;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#161a24; --surface:#1f2431; --surface2:#262c3b; --fg:#e8ecf4; --muted:#9aa3b5; --line:#323a4c;
-  --accent:#ff86ab; --accent2:#a194ff; --mint:#5ed8b8; --sun:#ffd27e;
-  --head1:#3a2532; --head2:#2a2848; --head3:#1f3a35; --shadow:0 2px 0 rgba(0,0,0,.25);
+  --bg:#0f1a23; --surface:#162531; --surface2:#1d2f3d; --fg:#e6f0f6; --muted:#97abba; --line:#2a3f4f;
+  --accent:#5bb6ea; --accent2:#6fcf86; --mint:#a5d65f; --sun:#ffd86b;
+  --head1:#132433; --head2:#14324a; --head3:#173826; --shadow:0 2px 0 rgba(0,0,0,.25);
   --hx-purple:#d48ae6; --hx-blue:#8fa2ff; --hx-green:#6fd38a; --hx-teal:#5ccfd6; --hx-orange:#ffa05a; --hx-red:#ff7b7b; --hx-pink:#ff7ce6; --hx-none:#6d7890;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#161a24; --surface:#1f2431; --surface2:#262c3b; --fg:#e8ecf4; --muted:#9aa3b5; --line:#323a4c;
-  --accent:#ff86ab; --accent2:#a194ff; --mint:#5ed8b8; --sun:#ffd27e;
-  --head1:#3a2532; --head2:#2a2848; --head3:#1f3a35; --shadow:0 2px 0 rgba(0,0,0,.25);
+  --bg:#0f1a23; --surface:#162531; --surface2:#1d2f3d; --fg:#e6f0f6; --muted:#97abba; --line:#2a3f4f;
+  --accent:#5bb6ea; --accent2:#6fcf86; --mint:#a5d65f; --sun:#ffd86b;
+  --head1:#132433; --head2:#14324a; --head3:#173826; --shadow:0 2px 0 rgba(0,0,0,.25);
   --hx-purple:#d48ae6; --hx-blue:#8fa2ff; --hx-green:#6fd38a; --hx-teal:#5ccfd6; --hx-orange:#ffa05a; --hx-red:#ff7b7b; --hx-pink:#ff7ce6; --hx-none:#6d7890;
   color-scheme:dark}
 *{box-sizing:border-box}
@@ -41,6 +42,8 @@ header.hero{background:linear-gradient(120deg,var(--head1),var(--head2) 55%,var(
 .hero h1{font-family:var(--f-display);font-weight:600;font-size:clamp(22px,4.6vw,32px);margin:0;line-height:1.2;text-wrap:balance}
 .hero p{margin:4px 0 0;color:var(--muted);font-size:14px}
 .mascot{flex:none;width:72px;height:72px}
+.logo{flex:none;width:76px;height:76px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 25%,transparent)}
+@media (max-width:420px){.logo{width:60px;height:60px}}
 .mascot .blink{animation:blink 4s infinite}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion:reduce){.mascot .blink{animation:none}}
@@ -129,24 +132,14 @@ dt{color:var(--muted);font-size:13px}
 dd{margin:0;overflow-wrap:anywhere}
 .box{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--surface2)}
 .box h4{margin:0 0 8px;font-family:var(--f-display);font-weight:500;font-size:15px}
-.copy{margin-top:14px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:500;padding:9px 16px;border-radius:999px;cursor:pointer}
+.copy{margin-top:14px;border:0;background:var(--accent);color:var(--surface);font:inherit;font-weight:500;padding:9px 16px;border-radius:999px;cursor:pointer}
 footer{color:var(--muted);font-size:12px;text-align:center;padding-bottom:30px}
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
 @media (max-width:420px){.tabs button{font-size:13.5px}.tabs .dot{display:none}}
 </style>
 
 <header class="hero"><div class="wrap">
-  <svg class="mascot" viewBox="0 0 80 80" aria-hidden="true">
-    <g transform="rotate(-28 40 40)">
-      <rect x="22" y="8" width="36" height="64" rx="18" fill="#ff8fb1"/>
-      <path d="M22 40h36v14a18 18 0 0 1-36 0z" fill="#fff"/>
-      <rect x="22" y="8" width="36" height="64" rx="18" fill="none" stroke="#2b3445" stroke-width="2.5"/>
-      <line x1="22" y1="40" x2="58" y2="40" stroke="#2b3445" stroke-width="2.5"/>
-      <g class="blink" style="transform-origin:40px 27px"><circle cx="33" cy="27" r="2.6" fill="#2b3445"/><circle cx="47" cy="27" r="2.6" fill="#2b3445"/></g>
-      <path d="M35 32q5 4 10 0" stroke="#2b3445" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-      <circle cx="29" cy="31" r="2.6" fill="#ff5f8f" opacity=".6"/><circle cx="51" cy="31" r="2.6" fill="#ff5f8f" opacity=".6"/>
-    </g>
-  </svg>
+  <img class="logo" src="logo.png" alt="ตราโรงพยาบาลอุตรดิตถ์" width="76" height="76">
   <div>
     <h1>บัญชียา รพ.อุตรดิตถ์</h1>
     <p>อัพเดตล่าสุดเมื่อวันที่ 16 พ.ย. 2569</p>
