@@ -114,6 +114,25 @@ section.grp>h2 small{font-family:var(--f-body);font-size:13px;color:var(--muted)
 .hx small{display:block;color:var(--muted);font-size:12px;line-height:1.35}
 .hx .ct{margin-left:auto;font-family:var(--f-display);font-size:13px;color:var(--muted)}
 .hx-tag{font-weight:600;color:var(--hx)}
+.chip.hxc{background:transparent;border:1.5px solid var(--c);color:var(--c);font-weight:600}
+.fuzzy{margin:8px 0 0;padding:8px 12px;border-radius:12px;background:color-mix(in oklab,var(--sun) 30%,var(--surface));font-size:13px}
+.fbtn{display:none;align-items:center;gap:8px;width:100%;margin-top:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;font-family:var(--f-display);padding:10px 14px;border-radius:14px;cursor:pointer}
+.fbtn .fcount{margin-left:auto;min-width:22px;height:22px;border-radius:11px;display:grid;place-items:center;background:var(--accent);color:var(--surface);font-size:12px}
+@media (max-width:640px){
+  .fbtn{display:flex}
+  .fpanel{display:none}
+  .fpanel.open{display:block}
+  .hero .wrap{padding-block:12px 14px;gap:12px}
+  .hero h1{font-size:20px}
+  .hero p{font-size:12.5px}
+  .bar{padding-top:8px}
+  .search input{padding:11px 42px 11px 44px}
+  .tabs{margin-top:8px;padding:4px}
+  .tabs button{padding:7px 4px}
+  .letters{padding:6px 0 4px}
+  .letters a{min-width:26px;height:26px}
+  section.grp{scroll-margin-top:150px}
+}
 mark{background:color-mix(in oklab,var(--sun) 55%,transparent);color:inherit;border-radius:4px;padding:0 1px}
 .empty{text-align:center;padding:50px 10px;color:var(--muted)}
 .empty .face{font-family:var(--f-display);font-size:34px;color:var(--accent)}
@@ -159,6 +178,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-bottom:30px}
 </div></div>
 
 <div class="wrap">
+  <button class="fbtn" id="fbtn" type="button" aria-expanded="false" aria-controls="fpanel"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>ตัวกรองและความหมายสี<span class="fcount" id="fcount" hidden></span></button>
+  <div class="fpanel" id="fpanel">
   <details class="legend" id="legend" open><summary><span class="sw"><i style="--c:var(--hx-purple)"></i><i style="--c:var(--hx-blue)"></i><i style="--c:var(--hx-green)"></i><i style="--c:var(--hx-teal)"></i><i style="--c:var(--hx-orange)"></i><i style="--c:var(--hx-red)"></i><i style="--c:var(--hx-pink)"></i></span>ความหมายสีตัวอักษร (ตาม HOSxP)</summary><div class="hx-list" id="hxList"></div></details>
   <div class="filters">
     <label>กลุ่มยา<select id="fg"></select></label>
@@ -167,7 +188,9 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-bottom:30px}
     <label>รูปแบบยา<select id="ff"></select></label>
     <label>สีตัวอักษร HOSxP<select id="fx"></select></label>
   </div>
+  </div>
   <div class="status"><span>พบ <b id="count">0</b> รายการ</span><span id="active"></span><button class="clear" id="clear" type="button" hidden>ล้างตัวกรองทั้งหมด</button></div>
+  <p class="fuzzy" id="fuzzyNote" hidden>ไม่พบชื่อที่ตรงทุกตัวอักษร จึงแสดงชื่อที่สะกดใกล้เคียงแทน</p>
 </div>
 <main class="wrap" id="main"></main>
 <footer class="wrap">ข้อมูลจากไฟล์ “บช ยา 16112569.xlsx” · ชื่อกลุ่มยาจัดตามรหัสยาของโรงพยาบาล</footer>
@@ -192,7 +215,26 @@ const PAY = {
  dir:['ขออนุมัติ ผอ. ก่อนใช้',265],j2:['บัญชี จ2 ต้องมีแบบกำกับ',290],restr:['Restricted',35],subst:['มียาแทน',50],
  noclaim:['เบิกไม่ได้',0],cond:['ใช้เฉพาะกรณี/ต้องอนุมัติ',320],case:['ยาเฉพาะราย',340],na:['ไม่ระบุ',220]
 };
-const KIND = {b:'b',s:'s',NED:'NED',ex:'ex',R2:'จ2 (R2)',R1:'จ1 (R1)','ED-HERB':'ED สมุนไพร','NED-HERB':'NED สมุนไพร','ED-':'ED',cosmetic:'เวชสำอาง'};
+const KIND = {b:'ED ก/ข (b)',s:'ED ค (s)',NED:'NED',ex:'ED ง (ex)',R2:'ED จ2 (R2)',R1:'ED จ1 (R1)','ED-HERB':'ED สมุนไพร','NED-HERB':'NED สมุนไพร','ED-':'ED ยาโควิด-19',cosmetic:'เวชสำอาง'};
+const KIND_DESC = {
+ b:'ยาในบัญชียาหลักแห่งชาติ บัญชี ก/ข ยาพื้นฐานที่ใช้ได้ทั่วไป (วิเคราะห์จากข้อมูล รอยืนยัน)',
+ s:'ยาในบัญชียาหลักแห่งชาติ บัญชี ค ใช้โดยแพทย์ผู้เชี่ยวชาญ (วิเคราะห์จากข้อมูล รอยืนยัน)',
+ ex:'ยาในบัญชียาหลักแห่งชาติ บัญชี ง ใช้เมื่อมีข้อบ่งใช้เฉพาะ ต้องมีระบบกำกับ (วิเคราะห์จากข้อมูล รอยืนยัน)',
+ R2:'บัญชี จ(2) ยาราคาแพง ต้องใช้แบบกำกับการใช้ยา', R1:'บัญชี จ(1) ยาโครงการพิเศษของหน่วยงานรัฐ',
+ NED:'ยานอกบัญชียาหลักแห่งชาติ', 'ED-':'ยาต้านไวรัสโควิด-19 (ยาโครงการ)'
+};
+const ABBR = {pcm:['paracetamol'],tylenol:['paracetamol'],sara:['paracetamol'],asa:['aspirin'],cpm:['chlorpheniramine'],kcl:['potassium cl'],
+ nss:['nss','sodium chloride'],ns:['nss'],mgso4:['magnesium sulfate'],hctz:['hydrochlorothiazide'],ntg:['nitroglycerin','glyceryl trinitrate'],
+ isdn:['isosorbide dinitrate'],ismn:['isosorbide mononitrate'],mtx:['methotrexate'],'5fu':['fluorouracil'],'5-fu':['fluorouracil'],
+ azt:['zidovudine'],tdf:['tenofovir'],taf:['tenofovir alafenamide'],efv:['efavirenz'],inh:['isoniazid'],pza:['pyrazinamide'],emb:['ethambutol'],
+ rif:['rifampicin'],smx:['sulfamethoxazole','co-trimoxazole'],bactrim:['sulfamethoxazole','co-trimoxazole'],mmf:['mycophenolate'],
+ csa:['ciclosporin','cyclosporin'],nahco3:['sodium bicarbonate'],caco3:['calcium carbonate'],feso4:['ferrous'],txa:['tranexamic'],
+ nac:['acetylcysteine'],epo:['epoetin'],ivig:['immunoglobulin'],lmwh:['enoxaparin'],ufh:['heparin'],mtv:['multivitamin'],
+ vitk:['phytomenadione','vitamin k'],b1:['thiamine','vitamin b1'],b12:['cobalamin','vitamin b12'],ppi:['omeprazole','pantoprazole','esomeprazole','lansoprazole'],
+ amoxicillin:['amoxycillin'],augmentin:['amoxycillin+clav','amoxicillin+clav','clavulan'],ceftriaxone:['ceftriaxone'],
+ adrenaline:['adrenaline','epinephrine'],epinephrine:['adrenaline'],norepinephrine:['nor-adrenaline','norepinephrine'],
+ cyclosporine:['ciclosporin'],acetaminophen:['paracetamol'],salbutamol:['salbutamol','albuterol'],albuterol:['salbutamol'],
+ 'พารา':['paracetamol'],'แอสไพริน':['aspirin'],'อินซูลิน':['insulin'],'วัคซีน':['vaccine','วัคซีน']};
 const FORM = {TAB:'ยาเม็ด',CAP:'แคปซูล',INJ:'ยาฉีด',SOL:'สารละลาย',EYD:'ยาหยอดตา',SYR:'ยาน้ำเชื่อม',CREA:'ครีม',INH:'ยาสูด',SUSP:'ยาน้ำแขวนตะกอน',
  DALS:'น้ำยาล้างไต',PWD:'ยาผง',GEL:'เจล',OINT:'ขี้ผึ้ง',NAS:'ยาพ่นจมูก',IR:'น้ำยาล้าง',SUPPO:'ยาเหน็บ',MIXT:'ยาน้ำผสม',EAD:'ยาหยอดหู',
  TRAN:'แผ่นแปะผิวหนัง',VT:'ยาเหน็บช่องคลอด',NEB:'ยาพ่นฝอยละออง',SPRAY:'สเปรย์',INHL:'ยาสูดดม',ELIX:'อีลิกเซอร์',PATCH:'แผ่นแปะ',LIQ:'ของเหลว',
@@ -210,6 +252,8 @@ const HX = {
  none:['สีปกติ','ยาทั่วไป','ไม่อยู่ในกลุ่มสีพิเศษ']
 };
 const hxc = x => `var(--hx-${x})`;
+const HXTAG = {purple:['◆','OCPA/มูลค่าสูง'],blue:['▲','HAD'],green:['●','staff'],teal:['■','จ2'],orange:['฿','ชำระเอง'],red:['★','NED เบิกได้'],pink:['✚','Restrict ATB']};
+const hxChip = x => HXTAG[x] ? `<span class="chip hxc" style="--c:${hxc(x)}"><span aria-hidden="true">${HXTAG[x][0]}</span> ${HXTAG[x][1]}</span>` : '';
 function classify(d){
   const txt = [d.n,d.t,d.p,d.sp?.note].filter(Boolean).join(' ');
   if (/\(HAD\)|high[ -]?alert/i.test(txt)) return 'blue';
@@ -241,6 +285,7 @@ function prep(d, i){
   d.list = d.pc==='case' ? 'sp' : (d.l==='USC' ? 'USC' : 'main');
   d.x = classify(d);
   d.hay = [d.n,d.t,d.c,d.sp?.th,d.sp?.tp,d.sp?.note].filter(Boolean).join(' ').toLowerCase();
+  d.words = [...new Set(d.hay.split(/[^a-z0-9]+/).filter(w=>w.length>=3))];
 }
 function sortAll(a){
   return a.sort((x,y)=> x.en!==y.en ? (x.en?-1:1) : (x.en ? collEn.compare(x.key,y.key) : collTh.compare(x.key,y.key)));
@@ -263,16 +308,41 @@ function buildFilters(){
 }
 const $ = id => document.getElementById(id);
 
+function lev(a,b,max){
+  if (Math.abs(a.length-b.length)>max) return max+1;
+  let prev=Array.from({length:b.length+1},(_,j)=>j);
+  for (let i=1;i<=a.length;i++){ const cur=[i]; let best=i;
+    for (let j=1;j<=b.length;j++){ cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1)); if(cur[j]<best) best=cur[j]; }
+    if (best>max) return max+1; prev=cur; }
+  return prev[b.length];
+}
+function fuzzyWord(t, words){
+  const k = t.length>=7 ? 2 : 1;
+  return words.some(w => w.length>=t.length-k && (lev(t, w.slice(0, t.length), k)<=k || lev(t, w, k)<=k));
+}
+S.fuzzy = false;
+function tokens(){ return S.q.toLowerCase().split(/\s+/).filter(Boolean); }
+function matchTok(d, t, fuzzy){
+  if (d.hay.includes(t)) return true;
+  const ab = ABBR[t]; if (ab && ab.some(x=>d.hay.includes(x))) return true;
+  if (fuzzy && t.length>=4 && /^[a-z0-9-]+$/.test(t)) return fuzzyWord(t, d.words);
+  return false;
+}
 function filtered(){
-  const toks = S.q.toLowerCase().split(/\s+/).filter(Boolean);
-  return DRUGS.filter(d =>
+  const toks = tokens();
+  const base = DRUGS.filter(d =>
     (!S.g || d.g===S.g) && (!S.p || d.pc===S.p) && (!S.x || d.x===S.x) && (!S.f || (d.f||'-')===S.f) &&
-    (!S.k || (S.k.startsWith('list:') ? d.list===S.k.slice(5) : d.k===S.k)) &&
-    toks.every(t => d.hay.includes(t)));
+    (!S.k || (S.k.startsWith('list:') ? d.list===S.k.slice(5) : d.k===S.k)));
+  S.fuzzy = false;
+  if (!toks.length) return base;
+  let res = base.filter(d => toks.every(t => matchTok(d, t, false)));
+  if (!res.length){ res = base.filter(d => toks.every(t => matchTok(d, t, true))); S.fuzzy = res.length>0; }
+  return res;
 }
 function hl(text){
   let s = esc(text);
-  const toks = S.q.toLowerCase().split(/\s+/).filter(Boolean).map(t=>esc(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  const raw = tokens().flatMap(t=>[t, ...(ABBR[t]||[])]);
+  const toks = raw.map(t=>esc(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
   if (!toks.length) return s;
   return s.replace(new RegExp('('+toks.join('|')+')','gi'),'<mark>$1</mark>');
 }
@@ -282,7 +352,7 @@ function row(d){
   const hx = d.x==='none' ? '' : `--hx:${hxc(d.x)};`;
   return `<button class="drug" data-i="${d.i}" style="${hx}--hue:${hxc(d.x)}"><span class="cap"></span><span class="body">
     <span class="n">${hl(d.n)}</span>${sub?`<div class="t">${hl(sub)}</div>`:''}
-    <span class="chips"><span class="chip pay">${esc(pay[0])}</span>
+    <span class="chips">${hxChip(d.x)}<span class="chip pay">${esc(pay[0])}</span>
     ${d.f?`<span class="chip">${esc(FORM[d.f]||d.f)}</span>`:''}
     ${d.k?`<span class="chip k">${esc(KIND[d.k]||d.k)}</span>`:''}
     ${d.list!=='main'?`<span class="chip sp">${esc(LIST[d.list])}</span>`:''}
@@ -298,14 +368,16 @@ function section(id, title, big, h, items, sub){
 function render(){
   const res = filtered();
   $('count').textContent = res.length.toLocaleString('th-TH');
+  $('fuzzyNote').hidden = !S.fuzzy;
   const act = [];
   if (S.g) act.push(GROUPS[S.g][0]); if (S.p) act.push(PAY[S.p][0]);
   if (S.k) act.push(S.k.startsWith('list:')?LIST[S.k.slice(5)]:(KIND[S.k]||S.k)); if (S.f) act.push(FORM[S.f]||S.f); if (S.x) act.push(HX[S.x][0]);
   $('active').textContent = act.length ? '· ' + act.join(' · ') : '';
+  $('fcount').hidden = !act.length; $('fcount').textContent = act.length;
   $('clear').hidden = !(act.length || S.q);
   ['fg','fp','fk','ff','fx'].forEach(id=>$(id).classList.toggle('on', !!$(id).value));
   const xc = countBy(d=>d.x);
-  $('hxList').innerHTML = Object.keys(HX).map(k=>`<button class="hx ${S.x===k?'on':''}" data-x="${k}" style="--c:${hxc(k)}"><span class="cap"></span><span><b>${HX[k][0]} · ${esc(HX[k][1])}</b>${HX[k][2]?`<small>${esc(HX[k][2])}</small>`:''}</span><span class="ct">${xc[k]||0}</span></button>`).join('');
+  $('hxList').innerHTML = Object.keys(HX).map(k=>`<button class="hx ${S.x===k?'on':''}" data-x="${k}" style="--c:${hxc(k)}"><span class="cap"></span><span><b>${HXTAG[k]?HXTAG[k][0]+' ':''}${HX[k][0]} · ${esc(HX[k][1])}</b>${HX[k][2]?`<small>${esc(HX[k][2])}</small>`:''}</span><span class="ct">${xc[k]||0}</span></button>`).join('');
   let html = '';
   const letters = $('letters');
   if (!res.length){
@@ -339,8 +411,8 @@ function openDrug(d){
   $('dlgTitle').textContent = d.n;
   const rows = [
     ['ชื่อการค้า', d.t], ['ชื่อภาษาไทย', d.sp?.th], ['รหัสยา', d.c], ['กลุ่มยา', g[0]],
-    ['รูปแบบ', d.f ? `${FORM[d.f]||d.f} (${d.f})` : ''], ['ประเภทบัญชี', d.k ? (KIND[d.k]||d.k) : ''],
-    ['สี HOSxP', `<span class="hx-tag">${HX[d.x][0]} · ${esc(HX[d.x][1])}</span>`], ['สิทธิ / การจ่าย', pay[0]], ['ข้อความในบัญชี', d.p], ['รายการ', LIST[d.list]],
+    ['รูปแบบ', d.f ? `${FORM[d.f]||d.f} (${d.f})` : ''], ['ประเภทบัญชี', d.k ? (KIND[d.k]||d.k) + (KIND_DESC[d.k] ? ' · ' + KIND_DESC[d.k] : '') : ''],
+    ['สี HOSxP', `<span class="hx-tag">${HXTAG[d.x]?HXTAG[d.x][0]+' ':''}${HX[d.x][0]} · ${esc(HX[d.x][1])}</span>`], ['สิทธิ / การจ่าย', pay[0]], ['ข้อความในบัญชี', d.p], ['รายการ', LIST[d.list]],
   ].filter(r=>r[1]);
   let sp = '';
   if (d.sp){
@@ -379,6 +451,7 @@ function init(data){
     const gc = e.target.closest('[data-g]'); if (gc){ S.g = S.g===gc.dataset.g?'':gc.dataset.g; $('fg').value=S.g; return render() }
     const pc = e.target.closest('[data-p]'); if (pc){ S.p = S.p===pc.dataset.p?'':pc.dataset.p; $('fp').value=S.p; return render() }
   });
+  $('fbtn').onclick = ()=>{ const o = $('fpanel').classList.toggle('open'); $('fbtn').setAttribute('aria-expanded', o); };
   $('hxList').addEventListener('click', e=>{ const b=e.target.closest('[data-x]'); if(!b) return; S.x = S.x===b.dataset.x?'':b.dataset.x; $('fx').value=S.x; S.limit={}; render() });
   let lg=null; try{ lg=localStorage.getItem('formulary-legend') }catch(e){}
   if (lg==='closed' || (!lg && matchMedia('(max-width:640px)').matches)) $('legend').open=false;
